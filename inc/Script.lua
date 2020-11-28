@@ -345,7 +345,7 @@ if MsgText[1] == "تاك" then
 if not msg.Admin then return "📛*│* هذا الامر يخص {الادمن,المدير,المنشئ,المطور} فقط  \n🚶" end
 tdcli_function({ID = "GetChannelMembers",channel_id_ = msg.chat_id_:gsub('-100',''), offset_ = 0,limit_ = 100
 },function(ta,hasn)
-local t = "\n⛔| قائمة الاعضاء \n┄─┅══┅─┄\n"
+local t = "\n⛔| قائمة الاعضاء \n●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●\n"
 x = 0
 local list = hasn.members_
 for k, v in pairs(list) do
@@ -436,7 +436,7 @@ if Json_Info.result.can_restrict_members == true then
 restrict = 'ꪜ' else restrict = '✘' end
 if Json_Info.result.can_promote_members == true then
 promote = 'ꪜ' else promote = '✘' end 
-return sendMsg(msg.chat_id_,msg.id_,'\n📌╿اهلا عزيزي البوت هنا ادمن بالكروب \n💢╽وصلاحياته هي ⇓ \n●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●\n📝╿تغير معلومات المجموعه ↞ ❪ '..info..' ❫\n📨│حذف الرسائل ↞ ❪ '..delete..' ❫\n🚷│حظر المستخدمين ↞ ❪ '..restrict..' ❫\n♻│دعوة مستخدمين ↞ ❪ '..invite..' ❫\n🔘│تثبيت الرسائل ↞ ❪ '..pin..' ❫\n🚸│اضافة مشرفين جدد ↞ ❪ '..promote..' ❫\n\n💠╽ملاحضه » علامة ❪  ꪜ ❫ تعني لديه الصلاحية وعلامة ❪ ✘ ❫ تعني ليس ليديه الصلاحيه')   
+return sendMsg(msg.chat_id_,msg.id_,'\n📌╿اهلا عزيزي البوت هنا ادمن بالقروب \n💢╽وصلاحياته هي ⇓ \nـــــــــــــــــــــــــــــــــــــــــــــــــــــــــ\n📝╿تغير معلومات المجموعه ↞ ❪ '..info..' ❫\n📨│حذف الرسائل ↞ ❪ '..delete..' ❫\n🚷│حظر المستخدمين ↞ ❪ '..restrict..' ❫\n♻│دعوة مستخدمين ↞ ❪ '..invite..' ❫\n🔘│تثبيت الرسائل ↞ ❪ '..pin..' ❫\n🚸│اضافة مشرفين جدد ↞ ❪ '..promote..' ❫\n\n💠╽ملاحضه » علامة ❪  ꪜ ❫ تعني لديه الصلاحية وعلامة ❪ ✘ ❫ تعني ليس ليديه الصلاحيه')   
 end
 end
 end
@@ -654,7 +654,91 @@ end
 return false
 end
 
+--==============================================================================================================================
 
+
+if MsgText[1] == "رفع مشرف" then
+if not msg.SuperCreator then return "📪¦ هذا الامر يخص {منشئ اساسي,المطور} فقط  \n" end
+
+if not MsgText[2] and msg.reply_id then 
+GetMsgInfo(msg.chat_id_,msg.reply_id,function(arg,data)
+if not data.sender_user_id_ then return sendMsg(arg.ChatID,arg.MsgID,"📛*¦* عذرا هذا العضو ليس موجود ضمن المجموعات \n❕") end
+local UserID = data.sender_user_id_
+
+GetUserID(UserID,function(arg,data)
+NameUser = Hyper_Link_Name(data)
+USERNAME = ResolveUserName(data)
+if data.type_.ID == "ChannelChatInfo" then return sendMsg(arg.ChatID,arg.MsgID,"👤*¦* عذرا هذا معرف قناة وليس حساب \n📛") end
+redis:hset(lhb..'username:'..arg.UserID,'username',USERNAME)
+redis:setex(lhb..":uploadingsomeon:"..msg.chat_id_..msg.sender_user_id_,500,NameUser)
+redis:setex(lhb..":uploadingsomeon2:"..msg.chat_id_..msg.sender_user_id_,500,arg.UserID)
+sendMsg(arg.ChatID,arg.MsgID,"📇¦  » حسننا الان ارسل صلاحيات المشرف :\n\n¦1- صلاحيه تغيير المعلومات\n¦2- صلاحيه حذف الرسائل\n¦3- صلاحيه دعوه مستخدمين\n¦4- صلاحيه حظر وتقيد المستخدمين \n¦5- صلاحيه تثبيت الرسائل \n¦6- صلاحيه رفع مشرفين اخرين\n\n¦[*]- لرفع كل الصلاحيات ما عدا رفع المشرفين \n¦[**] - لرفع كل الصلاحيات مع رفع المشرفين \n\n🚸¦ يمكنك اختيار الارقام معا وتعيين الكنيه للمشرف في ان واحد مثلا : \n\n¦ 136 الزعيم\n📬") 
+
+end,{ChatID=arg.ChatID,UserID=UserID,MsgID=arg.MsgID})
+end,{ChatID=msg.chat_id_,MsgID=msg.id_})
+
+
+
+elseif MsgText[2] and MsgText[2]:match('@[%a%d_]+') then 
+GetUserName(MsgText[2],function(arg,data)
+if not data.id_ then return sendMsg(arg.ChatID,arg.MsgID,"📛*¦* لآ يوجد عضـو بهہ‌‏ذآ آلمـعرف \n❕") end 
+local UserID = data.id_
+NameUser = Hyper_Link_Name(data)
+if data.type_.ID == "ChannelChatInfo" then return sendMsg(arg.ChatID,arg.MsgID,"👤*¦* عذرا هذا معرف قناة وليس حساب \n📛") end
+redis:hset(lhb..'username:'..UserID,'username',arg.USERNAME)
+redis:setex(lhb..":uploadingsomeon:"..arg.ChatID..msg.sender_user_id_,500,NameUser)
+redis:setex(lhb..":uploadingsomeon2:"..arg.ChatID..msg.sender_user_id_,500,UserID)
+sendMsg(arg.ChatID,arg.MsgID,"📇¦  » حسننا الان ارسل صلاحيات المشرف :\n\n¦1- صلاحيه تغيير المعلومات\n¦2- صلاحيه حذف الرسائل\n¦3- صلاحيه دعوه مستخدمين\n¦4- صلاحيه حظر وتقيد المستخدمين \n¦5- صلاحيه تثبيت الرسائل \n¦6- صلاحيه رفع مشرفين اخرين\n\n¦[*]- لرفع كل الصلاحيات ما عدا رفع المشرفين \n¦[**] - لرفع كل الصلاحيات مع رفع المشرفين \n\n🚸¦ يمكنك اختيار الارقام معا وتعيين الكنيه للمشرف في ان واحد مثلا : \n\n¦ 136 الزعيم\n📬") 
+end,{ChatID=msg.chat_id_,MsgID=msg.id_,USERNAME=MsgText[2]})
+
+elseif MsgText[2] and MsgText[2]:match('^%d+$') then 
+GetUserID(MsgText[2],action_by_id,{msg=msg,cmd="upMshrf"}) 
+end 
+return false
+end
+
+if MsgText[1] == "تنزيل مشرف" then
+if not msg.SuperCreator then return "📪¦ هذا الامر يخص {منشئ اساسي,المطور} فقط  \n" end
+
+if not MsgText[2] and msg.reply_id then 
+GetMsgInfo(msg.chat_id_,msg.reply_id,function(arg,data)
+if not data.sender_user_id_ then return sendMsg(arg.ChatID,arg.MsgID,"📛*¦* عذرا هذا العضو ليس موجود ضمن المجموعات \n❕") end
+local UserID = data.sender_user_id_
+if UserID == our_id then return sendMsg(arg.ChatID,arg.MsgID,"👤*¦* لا يمكن تنفيذ الامر للبوت\n📛") end
+GetUserID(UserID,function(arg,data)
+NameUser = Hyper_Link_Name(data)
+if data.type_.ID == "ChannelChatInfo" then return sendMsg(arg.ChatID,arg.MsgID,"👤*¦* عذرا هذا معرف قناة وليس حساب \n📛") end
+ResAdmin = UploadAdmin(arg.ChatID,arg.UserID,"")  
+if ResAdmin == '{"ok":false,"error_code":400,"description":"Bad Request: CHAT_ADMIN_REQUIRED"}' then return sendMsg(arg.ChatID,arg.MsgID,"👤*¦*لا يمكنني تنزيله لانه مرفوع من قبل منشئ اخر \n📛")  end
+redis:srem(lhb..':MONSHA_BOT:'..arg.ChatID,arg.UserID)
+redis:srem(lhb..'owners:'..arg.ChatID,arg.UserID)
+redis:srem(lhb..'admins:'..arg.ChatID,arg.UserID)
+redis:srem(lhb..'whitelist:'..arg.ChatID,arg.UserID)
+sendMsg(arg.ChatID,arg.MsgID,"📮¦ المستخدم  ⋙「 "..NameUser.." 」 \n📋¦ تم تنزيله من مشرفين المجموعه") 
+end,{ChatID=arg.ChatID,UserID=UserID,MsgID=arg.MsgID})
+end,{ChatID=msg.chat_id_,MsgID=msg.id_})
+elseif MsgText[2] and MsgText[2]:match('@[%a%d_]+') then 
+GetUserName(MsgText[2],function(arg,data)
+if not data.id_ then return sendMsg(arg.ChatID,arg.MsgID,"📛*¦* لآ يوجد عضـو بهہ‌‏ذآ آلمـعرف \n❕") end 
+local UserID = data.id_
+if UserID == our_id then return sendMsg(arg.ChatID,arg.MsgID,"👤*¦* لا يمكن تنفيذ الامر للبوت\n📛") end
+NameUser = Hyper_Link_Name(data)
+if data.type_.ID == "ChannelChatInfo" then return sendMsg(arg.ChatID,arg.MsgID,"👤*¦* عذرا هذا معرف قناة وليس حساب \n📛") end
+local ResAdmin = UploadAdmin(arg.ChatID,UserID,"")  
+if ResAdmin == '{"ok":false,"error_code":400,"description":"Bad Request: CHAT_ADMIN_REQUIRED"}' then return sendMsg(arg.ChatID,arg.MsgID,"👤*¦*لا يمكنني تنزيله لانه مرفوع من قبل منشئ اخر \n📛")  end
+redis:srem(lhb..':MONSHA_BOT:'..arg.ChatID,UserID)
+redis:srem(lhb..'owners:'..arg.ChatID,UserID)
+redis:srem(lhb..'admins:'..arg.ChatID,UserID)
+redis:srem(lhb..'whitelist:'..arg.ChatID,UserID)
+sendMsg(arg.ChatID,arg.MsgID,"📮¦ المستخدم  ⋙「 "..NameUser.." 」 \n📋¦ تم تنزيله من مشرفين المجموعه") 
+end,{ChatID=msg.chat_id_,MsgID=msg.id_})
+
+elseif MsgText[2] and MsgText[2]:match('^%d+$') then 
+GetUserID(MsgText[2],action_by_id,{msg=msg,cmd="DwonMshrf"}) 
+end 
+return false
+end
+--==============================================================================================================================
 if MsgText[1] == "رفع ادمن" then
 if not msg.Director then return "♦️*│*هذا الامر يخص {المطور,المنشئ,المدير} فقط  \n💥" end
 if not MsgText[2] and msg.reply_id then
@@ -1202,21 +1286,21 @@ local Namei = FlterName(data.first_name_..' '..(data.last_name_ or ""),20)
 GetPhotoUser(msg.sender_user_id_,function(arg, data)
 if redis:get(lhb.."getidstatus"..msg.chat_id_) == "Photo" then
 	if data.photos_[0] then 
-		ali = {'شهل صورة😍😌','لا قيمه للقمر امام وجهك🌚🥀','خليني احبك🙈❤️','ببكن خاص 🌚😹','نكبل 🙈♥','منور اليوم 😻','فديت الحلو🌚😹','شهل عسل ،₍🍯😻⁾ ','كلي يا حلو منين الله جابك🙈❤️','يهلا بلعافيه😍','مارتاحلك😐','تحبني؟🙈',
+		ali = {'شهل صورة😍😌','لا قيمه للقمر امام وجهك🌚🥀','خليني احبك🙈❤️','ببكن خاص 🌚😹','نكبل 🙈♥','منور اليوم 😻','فديت الحلو🌚😹','شهل عسل ،₍🍯😻⁾ ','قلي يا حلو منين الله جابك🙈❤️','يهلا بلعافيه😍','مارتاحلك😐','تحبني؟🙈',
 		}
 		ssssys = ali[math.random(#ali)]
 		if not redis:get("KLISH:ID") then
 		sendPhoto(msg.chat_id_,msg.id_,data.photos_[0].sizes_[1].photo_.persistent_id_,'🙋🏼‍♂️╿'..ssssys..'\n☄│ايديـك ❪ '..msg.sender_user_id_..' ❫\n🎫│معرفـك ❪ '..UserNameID..' ❫\n👮‍♀️│رتبتـك ❪ '..msg.TheRank..' ❫\n🎲│تفاعلك ❪ '..Get_Ttl(msgs)..' ❫\n💬│رسائلك ❪ '..msgs..' ❫\n🚸│سحكاتـك ❪ '..rfih..' ❫\n🐞╽نقاطك ❪ '..nko..' ❫\n💥',dl_cb,nil)
 		else
 		Text = redis:get("KLISH:ID")
-		Text = Text:gsub('IDGET',msg.sender_user_id_)
-		Text = Text:gsub('USERGET',UserNameID)
-		Text = Text:gsub('RTBGET',msg.TheRank)
-		Text = Text:gsub('TFGET',Get_Ttl(msgs))
-		Text = Text:gsub('MSGGET',msgs)
-		Text = Text:gsub('edited',rfih)
-		Text = Text:gsub('adduser',NumGha)
-		Text = Text:gsub('User_Points',nko)
+		Text = Text:gsub('ايديك',msg.sender_user_id_)
+		Text = Text:gsub('المعرف',UserNameID)
+		Text = Text:gsub('الرتب',msg.TheRank)
+		Text = Text:gsub('التفاعل',Get_Ttl(msgs))
+		Text = Text:gsub('الرسائل',msgs)
+		Text = Text:gsub('السحكات',rfih)
+		Text = Text:gsub('الجهات',NumGha)
+		Text = Text:gsub('النقاط',nko)
 		sendPhoto(msg.chat_id_,msg.id_,data.photos_[0].sizes_[1].photo_.persistent_id_,"🎇│"..ssssys.."\n"..Text.."",dl_cb,nil)
 		end
 	else
@@ -1224,28 +1308,28 @@ if redis:get(lhb.."getidstatus"..msg.chat_id_) == "Photo" then
 		sendMsg(msg.chat_id_,msg.id_,'📬│لا يمكنني عرض صورتك لانك قمت بحظر البوت او انك لاتملك صوره في بروفيلك ...!\n🎫╿معرفـك ['..UserNameID..']\n🎟│ايديـك ❪ '..msg.sender_user_id_..' ❫\n📡│رتبتـك ❪ '..msg.TheRank..' ❫\n🎲│تفاعلك ❪ '..Get_Ttl(msgs)..' ❫\n💬│رسائلك ❪ '..msgs..' ❫\n🚸│سحكاتـك ❪ '..rfih..' ❫\n📞│الـجـهـات ❪ '..NumGha..' ❫\n🐞╽نقاطك ❪ '..nko..' ❫\n')
 		else
 		Text = redis:get("KLISH:ID")
-		Text = Text:gsub('IDGET',msg.sender_user_id_)
-		Text = Text:gsub('USERGET',UserNameID)
-		Text = Text:gsub('RTBGET',msg.TheRank)
-		Text = Text:gsub('TFGET',Get_Ttl(msgs))
-		Text = Text:gsub('MSGGET',msgs)
-		Text = Text:gsub('edited',rfih)
-		Text = Text:gsub('adduser',NumGha)
-		Text = Text:gsub('User_Points',nko)
+		Text = Text:gsub('ايديك',msg.sender_user_id_)
+		Text = Text:gsub('المعرف',UserNameID)
+		Text = Text:gsub('الرتب',msg.TheRank)
+		Text = Text:gsub('التفاعل',Get_Ttl(msgs))
+		Text = Text:gsub('الرسائل',msgs)
+		Text = Text:gsub('السحكات',rfih)
+		Text = Text:gsub('الجهات',NumGha)
+		Text = Text:gsub('النقاط',nko)
 		sendMsg(msg.chat_id_,msg.id_,Flter_Markdown(Text))
 		end
 	end
 else
 	if redis:get("KLISH:ID") then
 		Text = redis:get("KLISH:ID")
-		Text = Text:gsub('IDGET',msg.sender_user_id_)
-		Text = Text:gsub('USERGET',UserNameID)
-		Text = Text:gsub('RTBGET',msg.TheRank)
-		Text = Text:gsub('TFGET',Get_Ttl(msgs))
-		Text = Text:gsub('MSGGET',msgs)
-		Text = Text:gsub('edited',rfih)
-		Text = Text:gsub('adduser',NumGha)
-		Text = Text:gsub('User_Points',nko)
+		Text = Text:gsub('ايديك',msg.sender_user_id_)
+		Text = Text:gsub('المعرف',UserNameID)
+		Text = Text:gsub('الرتب',msg.TheRank)
+		Text = Text:gsub('التفاعل',Get_Ttl(msgs))
+		Text = Text:gsub('الرسائل',msgs)
+		Text = Text:gsub('السحكات',rfih)
+		Text = Text:gsub('الجهات',NumGha)
+		Text = Text:gsub('النقاط',nko)
 		sendMsg(msg.chat_id_,msg.id_,Flter_Markdown(Text))
 		else
 		sendMsg(msg.chat_id_,msg.id_,'📬│الايدي بالصوره معطل \n🎫╿معرفـك ['..UserNameID..']\n🎟│ايديـك ❪ '..msg.sender_user_id_..' ❫\n📡│رتبتـك ❪ '..msg.TheRank..' ❫\n🎲│تفاعلك ❪ '..Get_Ttl(msgs)..' ❫\n💬│رسائلك ❪ '..msgs..' ❫\n🚸│سحكاتـك ❪ '..rfih..' ❫\n📞│الـجـهـات ❪ '..NumGha..' ❫\n🐞╽نقاطك ❪ '..nko..' ❫\n')
@@ -1346,14 +1430,14 @@ local animation = (redis:get(lhb..':animation:'..msg.chat_id_..':'..msg.sender_u
 local edited = (redis:get(lhb..':edited:'..msg.chat_id_..':'..msg.sender_user_id_) or 0)
 local video = (redis:get(lhb..':video:'..msg.chat_id_..':'..msg.sender_user_id_) or 0)
 
-local Get_info ="👨🏽‍🔧│اهـلا بـك عزيزي في معلوماتك 🥀 \n"
-.."●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●\n"
+local Get_info ="👨??‍🔧│اهـلا بـك عزيزي في معلوماتك 🥀 \n"
+.."●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●\n"
 .."🗯╿الاســم ❪ "..FlterName(data.first_name_..' '..(data.last_name_ or ""),25).." ❫\n"
 .."💠│المعرف ❪ "..ResolveUser(data).." ❫\n"
 .."⚜️│الايـدي ❪ `"..msg.sender_user_id_.."` ❫\n"
 .."🚸│رتبتــك ❪ "..msg.TheRank.." ❫\n"
 .."🔰╽ـ ❪ `"..msg.chat_id_.."` ❫\n"
-.."●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●\n"
+.."●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●\n"
 .." ❪ الاحـصـائـيـات الـرسـائـل ❫\n"
 .."💬╿الـرسـائـل ❪ `"..msgs.."` ❫\n"
 .."📞│الـجـهـات ❪ `"..NumGha.."` ❫\n"
@@ -1681,7 +1765,7 @@ redis:setex(lhb..'text_sudo:witting'..msg.sender_user_id_,1200,true)
 return '📭╿حسننا عزيزي 🍁\n💬╽الان قم بارسال الكليشه \n🛠' 
 end
 
-if MsgText[1] == "ضع شرط التفعيل" and MsgText[2] and MsgText[2]:match('^%d+$') then 
+if MsgText[1] == "ضع شرط التفعيل🔆🔆" and MsgText[2] and MsgText[2]:match('^%d+$') then 
 redis:set(lhb..':addnumberusers',MsgText[2]) 
 return '💱*│* تم وضـع شـرط آلتفعيل آلبوت آذآ گآنت آلمـجمـوعهہ‏‏ آگثر مـن *【'..MsgText[2]..'】* عضـو  🍁\n' 
 end
@@ -1829,6 +1913,8 @@ lhb..'fwd:all'..msg.sender_user_id_,
 lhb..'fwd:pv'..msg.sender_user_id_,
 lhb..'fwd:groups'..msg.sender_user_id_,
 lhb..'namebot:witting'..msg.sender_user_id_,
+lhb..":uploadingsomeon:"..msg.chat_id_..msg.sender_user_id_,
+lhb..":uploadingsomeon2:"..msg.chat_id_..msg.sender_user_id_,
 lhb..'addrd_all:'..msg.sender_user_id_,
 lhb..'delrd:'..msg.sender_user_id_,
 lhb..'addrd:'..msg.sender_user_id_,
@@ -1846,7 +1932,7 @@ end
 
 if (MsgText[1] == 'تحديث السورس' or MsgText[1] == 'تحديث السورس 🔂') then
 if not msg.SudoBase then return "♦️*│*هذا الامر يخص {المطور الاساسي} فقط  \n💥" end
-local GetVerison = https.request('https://github.com/lhbTELLE/lhb.github.io/GetVersion.txt') or 0
+local GetVerison = https.request('https://LHB.github.io/GetVersion.txt') or 0
 if GetVerison > version then
 UpdateSourceStart = true
 sendMsg(msg.chat_id_,msg.id_,'🔛*╿* يوجد تحديث جديد الان \n📡*╽* جاري تنزيل وتثبيت التحديث  ...')
@@ -1894,7 +1980,7 @@ else
 sendMsg(msg.chat_id_,msg.id_,'📛*│* عذرا الملف ليس بصيغه Json !?\n💥')
 end 
 else
-sendMsg(msg.chat_id_,msg.id_,'📛*│* عذرا هذا ليس ملف النسحه الاحتياطيه للمجموعات\n💥')
+sendMsg(msg.chat_id_,msg.id_,'📛*│* عذرا هذا ليس ملف النسخه الاحتياطيه للمجموعات\n💥')
 end 
 end,nil)
 else 
@@ -2059,7 +2145,7 @@ echo '*------------------------------\n*🔌 ❪ Uptime ❫  \n*»» '"$uptime"'
 end
 
 
-if MsgText[1] == 'السيرفر' then
+if MsgText[1] == 'السيرفر 📟' then
 if not msg.SudoUser then return "For Sudo Only." end
 return io.popen([[
 
@@ -2083,9 +2169,8 @@ if msg.type == 'channel' and msg.GroupActive then
 if MsgText[1] == "الاوامر" then
 if not msg.Admin then return "♦️*│*هذا الامر يخص {الادمن,المدير,المنشئ,المطور} فقط  \n💥" end
 return [[
-‏‎‏‌‌‏‌‌‌‌‏                                     ‌‌‏┄─┅══┅─┄
-👨‍💻↫‌‌‏مـسـآرت آلآوآمـر آلعآمـهہ‌‏ ⇊
-●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●
+‏👨‍💻↫‌‌‏مـسـآرت آلآوآمـر آلعآمـهہ‌‏ ⇊
+●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●
 👨‍⚖️╿م1 » آوآمـر آلآدآرهہ‌‏
 📟│م2 » آوآمـر آعدآدآت آلمـجمـوعهہ‌‏
 🛡│م3 » آوآمـر آلحمـآيهہ‌‏
@@ -2099,27 +2184,26 @@ return [[
 🛠│الاعدادات » عدادات المجموعه
 ⚜│سورس » سورس البوت
 💯╽المطور » مطور البوت
-●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●
+●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●
  ‏‎‏💭│رآسـلني للآسـتفسـآر ☜ { ]]..SUDO_USER..[[ } ✓ ]]
 end
 if MsgText[1]== 'م1' then
 if not msg.Admin then return "♦️*│*هذا الامر يخص {الادمن,المدير,المنشئ,المطور} فقط  \n💥" end
 local text =[[
-┄─┅══┅─┄     
 ¹↫❬آوآمر الرفع والتنزيل❭
-●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●
+●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●
 👷‍♂╿رفع «» تنزيل ❬المدير❭
 👨‍🔧│رفع «» تنزيل ❬ادمن❭ 
 👨‍💼│رفع «» تنزيل ❬مميز❭ 
-●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●
+●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●
 ²↫ ❬آو꯭آم꯭ـر آ꯭لم꯭ـس꯭ـح꯭ للم꯭ـنش꯭ـئ❭
-●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●
+●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●
 🗑│مسح الادمنـيـه «» ❬لمسح الادمنيه❭
 🗑│مسح المميزين «» ❬لمسح المميزين❭
 🗑│مسح المــــدراء «» ❬لمسح المدراء❭
-●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●
+●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●
 ³↫ ❬آوآمـر آلحظـر وآلطــرد وآلتقييد❭
-●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●
+●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●
 🤦‍♂│حظر ❬بالرد «» بالمعرف❭ لحظر العضو
 🙆‍♂│الغاء الحظر ❬بالرد «» بالمعرف❭ لالغاء الحظر 
 🏌‍♂│طرد ❬بالرد «» بالمعرف❭ لطرد العضو
@@ -2129,7 +2213,7 @@ local text =[[
 🔓│فك التقييد ❬بالرد «» بالمعرف❭ لالغاء تقييد العضو
 🚫│منع + الكلمه «» لمنع كلمه داخل المجموعه
 ⭕️╽الغاء منع «» لالغاء منع الكلمه
-●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●
+●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●
 💭*│* راسلني للاستفسار 💡↭ ]]..SUDO_USER
 sendMsg(msg.chat_id_,msg.id_,text)
 return false
@@ -2137,9 +2221,8 @@ end
 if MsgText[1]== 'م2' then
 if not msg.Admin then return "♦️*│*هذا الامر يخص {الادمن,المدير,المنشئ,المطور} فقط  \n💥" end
 local text = [[
-┄─┅══┅─┄
 👨‍💻↫❬اوامر رؤية الاعدادات❭
-●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●
+●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●
 🔮╿الـرابـط «» لعرض ❬الرابط❭  
 🔗│انشاء رابط «» لستخراج ❬الرابط❭  
 👨‍🔧│الادمنيه «» لعرض ❬الادمنيه❭
@@ -2154,7 +2237,7 @@ local text = [[
 👨‍💻│تغير امر. + الامر «» لتغير❬اوامر البوت❭
 ⌨│مسح امر + الامر «» لمسح❬الامر المضاف❭
 💻╽قائمـه الاوامر «» لمعرفه❬الاوامرالمضافه❭
-●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●
+●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●
 💭*│* راسلني للاستفسار 💡↭ ]]..SUDO_USER
 sendMsg(msg.chat_id_,msg.id_,text)
 return false
@@ -2162,9 +2245,8 @@ end
 if MsgText[1]== 'م3' then
 if not msg.Admin then return "♦️*│*هذا الامر يخص {الادمن,المدير,المنشئ,المطور} فقط  \n💥" end
 local text = [[
-┄─┅══┅─┄
 ¹↫❬اوامر حمايـه المجموعه❭
-●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●     
+●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●
 📵╿قفل «» فتح ❬الكـــل❭
 🙋‍♂│قفل «» فتح ❬التـاك❭
 📽│قفل «» فتح ❬الفيـديـــو❭
@@ -2175,7 +2257,7 @@ local text = [[
 🤐│قفل «» فتح ❬الدردشـــه❭
 🖇│قفل «» فتح ❬الــروابـــط❭
 🤖│قفل «» فتح ❬البـــوتــات❭
-🖊│قفل «» فتح ❬التعــديــل❭
+??│قفل «» فتح ❬التعــديــل❭
 🎫│قفل «» فتح ❬المعرفــات❭
 📝│قفل «» فتح ❬الكـــلايـش❭
 ♻️│قفل «» فتح ❬التـــكـــــرار❭
@@ -2184,15 +2266,15 @@ local text = [[
 🔚│قفل «» فتح ❬التوجيــــه❭
 🚫│قفل «» فتح ❬الدخول بالرابط❭
 🏌‍♂╽قفل «» فتح ❬البوتات بالطرد❭
-●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●     
+●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●
 ²↫❬القفل بالتقييـد❭
-●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●                                                                                        
+●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●                                                                                        
 📸╿قفل «» فتح ❬الــصــــــور بالتقييـد❭
 🔗│قفل «» فتح ❬الــروابــط بالتقييـد❭
 🎭│قفل «» فتح ❬المتحركه بالتقييـد❭
 📽│قفل «» فتح ❬الفيـــديــو بالتقييد❭
 🔒╽قفل «» فتح ❬التوجيــه بالتقييــد❭ 
-●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●
+●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●
 💭*│* راسلني للاستفسار 💡↭ ]]..SUDO_USER
 sendMsg(msg.chat_id_,msg.id_,text)
 return false
@@ -2200,9 +2282,8 @@ end
 if MsgText[1]== 'م4' then
 if not msg.Director then return "♦️*│*هذا الامر يخص {المطور,المنشئ,المدير} فقط  \n💥" end
 local text = [[
-┄─┅══┅─┄
 👨‍💻↫❬اوامر الخدمــه❭ 
-●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●
+●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●
 🎟╿ايـــدي «» لعرض صورتك -:- معلوماتك
 🎫│ايديـي «» لعرض ايديك 
 💳│ايدي بالرد «» لعرض ايدي الشخص
@@ -2224,7 +2305,7 @@ local text = [[
 🏌‍♀│طرد المحذوفين «» لطرد الحسابات المحذوفه
 🔗│رابط الحذف «» لحذف حساب تلكرام
 🎨╽زخرفه «» لزخرفه اي شي تريد
-●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●
+●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●
 💭*│* راسلني للاستفسار 💡↭ ]]..SUDO_USER
 sendMsg(msg.chat_id_,msg.id_,text)
 return false
@@ -2232,11 +2313,10 @@ end
 if MsgText[1]== 'م5' then
 if not msg.Admin then return "♦️*│*هذا الامر يخص {الادمن,المدير,المنشئ,المطور} فقط  \n💥" end
 local text =[[
-┄─┅══┅─┄
 🤪╿❬ آوآمر التحشيش❭
 🙋🏽‍♂│مرحبآ عزيزي ،
 💯╽إليـك اوامر التحشيش كـ التالي
-●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●
+●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●
 🤴╿رفع «» تنزيل ❬ تـــاج ❭
 👰│رفع «» تنزيل ❬ مرتي ❭
 🤪│رفع «» تنزيل ❬ اثـول ❭
@@ -2244,9 +2324,9 @@ local text =[[
 🦓│رفع «» تنزيل ❬ مطـي ❭
 🐐│رفع «» تنزيل ❬ صخـل ❭
 🦎│رفع «» تنزيل ❬ زاحف ❭
-❤️│رفع «» ❬ بكلبي ❭ تنزيل «» ❬ من كلبي❭
-🎈╽❬ طلاك ❭ «» ❬ زواج ❭
-●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●
+❤️│رفع «» ❬ بقلبي ❭ تنزيل «» ❬ من قلبي❭
+🎈╽❬ طلاق ❭ «» ❬ زواج ❭
+●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●
 💭*│* راسلني للاستفسار 💡↭ ]]..SUDO_USER
 sendMsg(msg.chat_id_,msg.id_,text)
 return false
@@ -2254,9 +2334,8 @@ end
 if MsgText[1]== 'م6' then
 if not msg.Admin then return "♦️*│*هذا الامر يخص {الادمن,المدير,المنشئ,المطور} فقط  \n💥" end
 local text = [[
-┄─┅══┅─┄     
 👨‍💻↫ آوآمر آلتعطيل و آلتفعيل
-●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●
+●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●
 👥╿تفعيل «» تعطيل  ❬ الرفــع ❭
 🗣│تفعيل «» تعطيل  ❬ الردود ❭
 🕹│تفعيل «» تعطيل  ❬الالعـاب❭
@@ -2264,7 +2343,7 @@ local text = [[
 👋│تفعيل «» تعطيل  ❬ الترحيب ❭
 🆔│تفعيل «» تعطيل  ❬ الايدي ❭
 🌅╽تفعيل «» تعطيل  ❬ الايدي بالصوره ❭
-●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●
+●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●
 💭*│* راسلني للاستفسار 💡↭ ]]..SUDO_USER
 sendMsg(msg.chat_id_,msg.id_,text)
 return false
@@ -2272,9 +2351,8 @@ end
 if MsgText[1]== 'م7' then
 if not msg.Admin then return "♦️*│*هذا الامر يخص {الادمن,المدير,المنشئ,المطور} فقط  \n💥" end
 local text = [[
-┄─┅══┅─┄
 👨‍💻↫ آوآمر ❬ اوامر الوضع للمجموعه ❭
-●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●
+●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●
 🔗╿ضع رابـط «» لوضع ❬ رابط ❭
 💳│ضع اســـم «» لوضع ❬ اســم ❭
 🏞│ضع صوره «» لوضع ❬ صوره ❭
@@ -2282,7 +2360,7 @@ local text = [[
 🧾│ضع القوانيــن «» لوضع ❬ القوانين ❭ 
 👋│ضع الترحيب «» لوضع ❬ ترحيــب ❭
 💫╽ضع تكرار + العدد «» لوضع ❬ تكرار ❭
-●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●
+●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●
 💭*│* راسلني للاستفسار 💡↭ ]]..SUDO_USER
 sendMsg(msg.chat_id_,msg.id_,text)
 return false
@@ -2290,24 +2368,30 @@ end
 if MsgText[1]== "م المطور" then
 if not msg.SudoBase then return "🔅│للمطور الاساسي فقط  🎖" end
 local text = [[
-┄─┅══┅─┄     
 👨‍💻↫ ❬اوامـر المطـور❭ 
-●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●
+●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●
 📛╿تفعيـل «» ❬لتفعيل البوت ❭
 🚫│تعطيل «» ❬لتعطيل البوت ❭
 ⚠️│اسم بوتك + غادر «» ❬لطرد البوت❭
 👁‍🗨╽رفع منشى «» ❬رفع منشى بالبوت❭
-●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●
-🔊╿اذاعه «» ❬لنشر رساله لكل المجموعات❭
-📢│اذاعه خاص «» ❬ لنشر رساله لكل المشتركين خاص❭
-📣│اذاعه عام «» ❬لنشر رساله لكل المجموعات والخاص❭
-🔈│اذاعه عام بالتوجيه «» ❬لنشر منشور قناتك بابتوجيه للكل❭
-🀄️│تنظيف المجموعات«»  ❬لمسح المجموعات الوهميه❭
-⚙╽تنظيف المشتركين «» ❬لمسح المشتركين الوهميين❭
-●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●
+●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●
+🔊╿اذاعه «» 
+❬لنشر رساله لكل المجموعات❭
+📢│اذاعه خاص «»
+ ❬ لنشر رساله لكل المشتركين خاص❭
+📣│اذاعه عام «»
+ ❬لنشر رساله لكل المجموعات والخاص❭
+🔈│اذاعه عام بالتوجيه «»
+ ❬ لنشر منشور قناتك بابتوجيه للكل❭ 
+🀄️│تنظيف المجموعات«»  
+❬لمسح المجموعات الوهميه❭
+⚙╽تنظيف المشتركين «» 
+❬لمسح المشتركين الوهميين❭
+●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●
 ♻️╿تحديث «» ❬لتحديث ملفات البوت❭
-💭╽تحديث السورس «» ❬لتحديث السورس الى اصدار احدث❭
-●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●
+💭╽تحديث السورس «»
+ ❬لتحديث السورس الى اصدار احدث❭
+●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●
 💭*│* راسلني للاستفسار 💡↭ ]]..SUDO_USER
 sendMsg(msg.chat_id_,msg.id_,text)
 return false
@@ -2316,9 +2400,8 @@ end
 if MsgText[1]== 'اوامر الرد' then
 if not msg.Director then return "♦️*│*هذا الامر يخص {المطور,المنشئ,المدير} فقط  \n💥" end
 local text = [[
-┄─┅══┅─┄     
 👨‍💻↫❬جميع اوامر الردود ❭
-●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●
+●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●
 🔻╿الردود «» لعرض الردود المثبته
 ♦️│اضف رد «» لأضافه رد جديد
 ♦️│مسح رد «» الرد المراد مسحه
@@ -2327,7 +2410,7 @@ local text = [[
 ♦️│اضف رد عام «» لاضافه رد لكل المجموعات
 ♦️│مسح رد عام  «» لمسح الرد العام 
 🔺╽مسح الردود العامه «» لمسح كل ردود العامه
-●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●
+●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●
 💭*│* راسلني للاستفسار 💡↭ ]]..SUDO_USER
 sendMsg(msg.chat_id_,msg.id_,text)
 return false
@@ -2372,13 +2455,16 @@ end
 
 if MsgText[1] == "سورس" or MsgText[1]=="السورس" then
 return [[
-┄─┅══┅─┄     
 👋│اهلا بك في سورس اللـهـب 😍
+اقوئ سورس بوتات حماية بالوطن العربي
 ●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●
+➥
 📡╿[قناة السورس](t.me/ASTORHBOTS)
-⚜│[قناة شروحات السورس](t.me/AST0RHBOTS)
-🤖│[بوت تواصل](t.me/TUaSiLlhbbot)
+➥
+🤖│[بوت تواصل](t.me/TWSLASTBOT)
+➥
 👨🏻‍✈️╽[مطور السـورس](t.me/AST0RH)
+➥
 ●ـ▬ــ▬ஜ۩۞۩ஜ▬ـ▬ـ●
 
 ]]
@@ -2558,19 +2644,19 @@ end
 
 if Black == 'welcome on' or Black == 'تفعيل الترحيب' then
 if redis:get(lhb..'welc'..msg.chat_id_) == 'on' then
-sendMsg(msg.chat_id_,msg.id_,'تم تفعيل الترحيب سابقا')
+sendMsg(msg.chat_id_,msg.id_,'📮| تم تفعيل ترحيب المجموعه سابقا')
 else
-sendMsg(msg.chat_id_,msg.id_,'تم تفعيل الترحيب')
+sendMsg(msg.chat_id_,msg.id_,'📮| تم تفعيل ترحيب المجموعه')
 redis:set(lhb..'welc'..msg.chat_id_,'on')
 end
 end
 if Text == 'welcome off' or Text == 'تعطيل الترحيب' then
 if redis:get(lhb..'welc'..msg.chat_id_) == 'off' then
-sendMsg(msg.chat_id_,msg.id_,'تم تعطيل الترحيب سابقا')
+sendMsg(msg.chat_id_,msg.id_,'📮| تم تعطيل ترحيب المجموعه سابقآ')
 redis:set(lhb..'welc'..msg.chat_id_,'off')
 redis:del(lhb..'welc'..msg.chat_id_,'on')
 else
-sendMsg(msg.chat_id_,msg.id_,'تم تعطيل الترحيب')
+sendMsg(msg.chat_id_,msg.id_,'📮| تم تعطيل ترحيب المجموعه')
 end
 end
 
@@ -2643,13 +2729,14 @@ end
 if msg.text=="/start" then 
 
 if msg.SudoBase then
-local text = '🙋🏻‍♂╿ئمنور حبي ♥\n🔻 |  آنت آلمـطـور آلآسـآسـي هنآ 🛠\n●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●\n\n🚸  |  تسـتطـيع‌‏ آلتحگم بكل آلآوآمـر آلمـمـوجودهہ‌‏ بآلگيبورد الخاص بالبوت\n🔺╽فقط آضـغط ع آلآمـر آلذي تريد تنفيذهہ‌‏'
+local text = '🙋🏻‍♂╿ئمنور حبي ♥\n🔻 |  آنت آلمـطـور آلآسـآسـي هنآ 🛠\n●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●\n\n🚸  |  تسـتطـيع‌‏ آلتحگم بكل آلآوآمـر آلمـمـوجودهہ‌‏ بآلگيبورد الخاص بالبوت\n🔺╽فقط آضـغط ع آلآمـر آلذي تريد تنفيذهہ‌‏'
 local keyboard = {
 {"ضع اسم للبوت ©","ضع صوره للترحيب 🌄"},
  {"تعطيل التواصل ✖️","تفعيل التواصل 🔛"},
 {"تعطيل البوت خدمي","تفعيل البوت خدمي","المطورين 🔥"},
  {"المشتركين Ⓜ","المجموعات 🌋","الاحصائيات 💥"},
- {"اضف رد عام ➕","الردود العامه 🗨"},
+ {"اضف رد عام ➕","مسح رد عام"},
+{"ضع شرط التفعيل🔆","الردود العامه 🗨"},
  {"اذاعه 🗣","اذاعه خاص 🗣"},
 {"اذاعه عام 📢","اذاعه عام بالتوجيه 📣"},
  {"تحديث ♻️","قائمه العام 📜","ايديي🆔"},
@@ -2657,8 +2744,8 @@ local keyboard = {
 {"تغيير الاشتراك الاجباري 🔁","الاشتراك الاجباري ⚠️"},
 {"تنظيف المشتركين 🗑","تنظيف المجموعات 🗑"},
  {"نسخه احتياطيه للمجموعات"},
- {"قناة السورس 📡"},
- {"تحديث السورس 🔂"},
+ {"قناة السورس 📡","تحديث السورس 🔂"},
+{"السيرفر 📟","نقل ملكية البوت👨‍💻"},
  {"الغاء الامر ✖️"}}
 return send_key(msg.sender_user_id_,text,keyboard,nil,msg.id_)
 else
@@ -2670,9 +2757,9 @@ text = [[🤖╿آهلا انآ بــــوت آســمـي   []]..redis:get(l
 🚸╽ لتفعيل آلبوت آتبــع الشـروط ❕
 ¹↫ ❬اضف البوت الى المجموعه❭ 🤔
 ²↫ ❬ارفع البوت ادمن في المجموعه❭♻️
-³↫ ❬وارسل تفعيل وسيتم تفعيل البوت ورفع مشرفي الكروب تلقائين ❭ 🔱
+³↫ ❬وارسل تفعيل وسيتم تفعيل البوت ورفع مشرفي القروب تلقائين ❭ 🔱
 
-●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●
+ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
  ⚖│مـعـرف الـمـطـــور ↫ ]]..SUDO_USER..[[
 ]]
 else
@@ -2682,9 +2769,9 @@ text = [[🤖╿آهلا انآ بــــوت آســمـي   []]..redis:get(l
 🚸╽ لتفعيل آلبوت آتبــع الشـروط ❕
 ¹↫ ❬اضف البوت الى المجموعه❭ 🤔
 ²↫ ❬ارفع البوت ادمن في المجموعه❭♻️
-³↫ ❬وارسل تفعيل وسيتم تفعيل البوت ورفع مشرفي الكروب تلقائين ❭ 🔱
+³↫ ❬وارسل تفعيل وسيتم تفعيل البوت ورفع مشرفي القروب تلقائين ❭ 🔱
 
-●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●
+ـــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
  ⚖│مـعـرف الـمـطـــور ↫ ]]..SUDO_USER..[[
 ]]
 end
@@ -2821,6 +2908,88 @@ end
 
 if msg.text then
 --====================== Requst UserName Of Channel For ForceSub ==============
+if msg.SuperCreator and redis:get(lhb..":uploadingsomeon:"..msg.chat_id_..msg.sender_user_id_) then 
+
+NameUser = redis:get(lhb..":uploadingsomeon:"..msg.chat_id_..msg.sender_user_id_)
+UserID = redis:get(lhb..":uploadingsomeon2:"..msg.chat_id_..msg.sender_user_id_)
+if not msg.text:match("[1234567]") and not msg.text:match("[*]") and not msg.text:match("[*][*]") then
+redis:del(lhb..":uploadingsomeon:"..msg.chat_id_..msg.sender_user_id_)
+redis:del(lhb..":uploadingsomeon2:"..msg.chat_id_..msg.sender_user_id_)
+return sendMsg(msg.chat_id_,msg.id_,"📛*¦* تم الغاء الامر , يجب ان يحتوي رسالتك ع ارقام الصلاحيات المعروضه . \n📛")   
+end
+
+Nikname = msg.text:gsub("[1234567]","")
+Nikname = Nikname:gsub("[*]","")
+ResAdmin = UploadAdmin(msg.chat_id_,UserID,msg.text)  
+if ResAdmin == '{"ok":false,"error_code":400,"description":"Bad Request: not enough rights"}' then
+sendMsg(msg.chat_id_,msg.id_,"📛*¦* عذرا البوت ليس لديه صلاحيه رفع مشرفين في المجموعه \n📛") 
+elseif ResAdmin == '{"ok":false,"error_code":400,"description":"Bad Request: can\'t remove chat owner"}' then
+sendMsg(msg.chat_id_,msg.id_,"📛*¦* عذرا لا يمكنني التحكم بصلاحيات المنشئ للمجموعه. \n📛") 
+elseif ResAdmin == '{"ok":false,"error_code":400,"description":"Bad Request: CHAT_ADMIN_REQUIRED"}' then
+sendMsg(msg.chat_id_,msg.id_,"📛*¦* عذرا لا يمكنني التحكم بصلاحيات المشرف مرفوع من قبل منشئ اخر . \n📛") 
+elseif ResAdmin == '{"ok":true,"result":true}' then
+ChangeNikname(msg.chat_id_,UserID,Nikname)
+redis:sadd(lhb..'admins:'..msg.chat_id_,UserID)
+local trues = "✓"
+local falses = "✖️"
+
+infochange = falses
+infochange1 = falses
+infochange2 = falses
+infochange3 = falses
+infochange4 = falses
+infochange5 = falses
+if msg.text:match(1) then
+infochange = trues
+end
+if msg.text:match(2) then
+infochange1 = trues
+end
+if msg.text:match(3) then
+infochange2 = trues
+end
+if msg.text:match(4) then
+infochange3 = trues
+end
+if msg.text:match(5) then
+infochange4 = trues
+end
+if msg.text:match(6) then
+infochange5 = trues
+end
+if msg.text:match("[*][*]") then
+infochange = trues
+infochange1 = trues
+infochange2 = trues
+infochange3 = trues
+infochange4 = trues
+infochange5 = trues
+elseif msg.text:match("[*]") then
+infochange = trues
+infochange1 = trues
+infochange2 = trues
+infochange3 = trues
+infochange4 = trues
+end
+
+if Nikname == "" then Nikname = "بدون" end
+sendMsg(msg.chat_id_,msg.id_,"📮¦ المشرف  ⋙ 「 "..NameUser.." 」 صلاحياته : \n\n"
+.."📱¦ تغيير معلومات المجموعه : "..infochange.."\n"
+.."🗑¦ صلاحيه حذف الرسائل : "..infochange1.."\n"
+.."📬¦ صلاحيه دعوه مستخدمين : "..infochange2.."\n"
+.."🔑¦ صلاحيه حظر وتقيد المستخدمين : "..infochange3.."\n"
+.."📌¦ صلاحيه تثبيت الرسائل : "..infochange4.."\n"
+.."📤¦ صلاحيه رفع مشرفين اخرين : "..infochange5.."\n\n"
+.."📋¦ الـكـنـيـة : ["..Nikname.."]\n"
+.."\n✓") 
+else
+sendMsg(msg.chat_id_,msg.id_,"📮¦ المشرف  ⋙ 「 "..NameUser.." 」  حدث خطأ ما  \n✓") 
+end
+redis:del(lhb..":uploadingsomeon:"..msg.chat_id_..msg.sender_user_id_)
+redis:del(lhb..":uploadingsomeon2:"..msg.chat_id_..msg.sender_user_id_)
+return false
+end
+
 local Text = msg.text
 local UserID =  msg.sender_user_id_
 if msg.Creator then
@@ -2830,14 +2999,14 @@ local hasnid= [[
 *🚸¦ اهلابك عزيزي  
 🎫¦تستطيع الان تغير كليشه الايدي 📣
 ---------------------
- •  الايدي •* `IDGET`
-*• رتبتي • * `RTBGET`
-*• المعرف • * `USERGET`
-*• رسائلك • * `MSGGET`
-*•سحكاتك • * `edited`
-*• تفاعلك • * `TFGET`
-*• جهاتك • * `adduser`
-*•مجوهراتك • * `User_Points`
+ •  الايدي •* `ايديك`
+*• رتبتي • * `الرتب`
+*• المعرف • * `المعرف`
+*• رسائلك • * `الرسائل`
+*•سحكاتك • * `السحكات`
+*• تفاعلك • * `التفاعل`
+*• جهاتك • * `الجهات`
+*•مجوهراتك • * `النقاط`
 
 ]]
 return sendMsg(msg.chat_id_,msg.id_,hasnid) 
@@ -3147,7 +3316,7 @@ end
 
 if msg.text and msg.type == "channel" then
 if msg.text:match("^"..Bot_Name.." غادر$") and (msg.SudoBase or msg.SudoBase or msg.Director) then
-sendMsg(msg.chat_id_,msg.id_,'🚦│تفو عليكم حغادر باي 💔🚶‍♂')
+sendMsg(msg.chat_id_,msg.id_,'🚦│اوكـ باي 💔🚶‍♂')
 rem_data_group(msg.chat_id_)
 StatusLeft(msg.chat_id_,our_id)
 return false
@@ -3275,7 +3444,7 @@ else
 if redis:get(lhb..'welcome:get'..msg.chat_id_) then 
 if not msg.adduserType then
 GetUserID(msg.sender_user_id_,function(arg,data)  
-welcome = (redis:get(lhb..'welcome:msg'..msg.chat_id_) or "🙋🏻‍♂│اهلن بك عزيزي {الاسم}\n🎟│معرفك » {المعرف}\n{القوانين}\n\nالرجاء الالتزام بالقوانين ♥\n●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●\n⚜│اسم الكروب » {المجموعه}")
+welcome = (redis:get(lhb..'welcome:msg'..msg.chat_id_) or "🙋🏻‍♂│اهلن بك عزيزي {الاسم}\n🎟│معرفك » {المعرف}\n{القوانين}\n\nالرجاء الالتزام بالقوانين ♥\nـــــــــــــــــــــــــــــــــــــــــــــــــــــــــ\n⚜│اسم القروب » {المجموعه}")
 if welcome then
 rules = (redis:get(lhb..'rulse:msg'..msg.chat_id_) or "👨🏻‍💻╿مرحبأ عزيري القوانين كلاتي 👇🏻\n♦️│ممنوع نشر الروابط\n⚠️│ممنوع التكلم او نشر صور اباحيه\n⚔│ممنوع  اعاده توجيه\n💭│ممنوع التكلم بلطائفه\n♥️╽الرجاء احترام المدراء والادمنيه 😅\n")
 welcome = welcome:gsub("{القوانين}", rules)
@@ -3287,7 +3456,7 @@ sendMsg(msg.chat_id_,msg.id_,Flter_Markdown(welcome))
 end 
 end)
 else
-welcome = (redis:get(lhb..'welcome:msg'..msg.chat_id_) or "🙋🏻‍♂│اهلن بك عزيزي {الاسم}\n🎟│معرفك » {المعرف}\n{القوانين}\n\nالرجاء الالتزام بالقوانين ♥\n●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●\n⚜│اسم الكروب » {المجموعه}")
+welcome = (redis:get(lhb..'welcome:msg'..msg.chat_id_) or "🙋🏻‍♂│اهلن بك عزيزي {الاسم}\n🎟│معرفك » {المعرف}\n{القوانين}\n\nالرجاء الالتزام بالقوانين ♥\nـــــــــــــــــــــــــــــــــــــــــــــــــــــــــ\n⚜│اسم القروب » {المجموعه}")
 if welcome then
 rules = (redis:get(lhb..'rulse:msg'..msg.chat_id_) or "👨🏻‍💻╿مرحبأ عزيري القوانين كلاتي 👇🏻\n♦️│ممنوع نشر الروابط\n⚠️│ممنوع التكلم او نشر صور اباحيه\n⚔│ممنوع  اعاده توجيه\n💭│ممنوع التكلم بلطائفه\n♥️╽الرجاء احترام المدراء والادمنيه ??\n")
 welcome = welcome:gsub("{القوانين}", rules)
@@ -3335,7 +3504,7 @@ local Chek_Info = https.request('https://api.telegram.org/bot'..Token..'/getChat
 local Json_Info = JSON.decode(Chek_Info)
 if Json_Info.ok == true then
 if Json_Info.result.status == "creator" then
-return sendMsg(msg.chat_id_,msg.id_,'🚸│صلاحياته منشئ الكروب\n🍃')   
+return sendMsg(msg.chat_id_,msg.id_,'🚸│صلاحياته منشئ القروب\n🍃')   
 end 
 if Json_Info.result.status == "member" then
 return sendMsg(msg.chat_id_,msg.id_,'🚸│مجرد عضو هنا\n🍃')   
@@ -3353,7 +3522,7 @@ if Json_Info.result.can_restrict_members == true then
 restrict = 'ꪜ' else restrict = '✘' end
 if Json_Info.result.can_promote_members == true then
 promote = 'ꪜ' else promote = '✘' end
-return sendMsg(chat,msg.id_,'📌╿الرتبة : مشرف 🍃\n💢╽والصلاحيات هي ⇓ \n●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●\n📝╿تغير معلومات المجموعه ↞ ❪ '..info..' ❫\n📨│حذف الرسائل ↞ ❪ '..delete..' ❫\n🚷│حظر المستخدمين ↞ ❪ '..restrict..' ❫\n♻│دعوة مستخدمين ↞ ❪ '..invite..' ❫\n🔘│تثبيت الرسائل ↞ ❪ '..pin..' ❫\n🚸│اضافة مشرفين جدد ↞ ❪ '..promote..' ❫\n\n💠╽ملاحضه » علامة ❪  ꪜ ❫ تعني لديه الصلاحية وعلامة ❪ ✘ ❫ تعني ليس ليديه الصلاحيه')   
+return sendMsg(chat,msg.id_,'📌╿الرتبة : مشرف 🍃\n💢╽والصلاحيات هي ⇓ \nـــــــــــــــــــــــــــــــــــــــــــــــــــــــــ\n📝╿تغير معلومات المجموعه ↞ ❪ '..info..' ❫\n📨│حذف الرسائل ↞ ❪ '..delete..' ❫\n🚷│حظر المستخدمين ↞ ❪ '..restrict..' ❫\n♻│دعوة مستخدمين ↞ ❪ '..invite..' ❫\n🔘│تثبيت الرسائل ↞ ❪ '..pin..' ❫\n🚸│اضافة مشرفين جدد ↞ ❪ '..promote..' ❫\n\n💠╽ملاحضه » علامة ❪  ꪜ ❫ تعني لديه الصلاحية وعلامة ❪ ✘ ❫ تعني ليس ليديه الصلاحيه')   
 end
 end
 end
@@ -3929,11 +4098,11 @@ local ss97 = {
 "ها حياتي😻","عيونه 👀 وخشمه 👃🏻واذانه👂🏻",
 "باقي ويتمدد 😎","ها حبي 😍","ها عمري 🌹","اجيت اجيت كافي لتصيح 🌚??",
 "هياتني اجيت 🌚❤️","نعم حبي 😎","هوه غير يسكت عاد ها شتريد 😷",
-"احجي بسرعه شتريد 😤","ها يا كلبي ❤️","هم صاحو عليه راح ابدل اسمي من وراكم 😡",
-"لك فداك ["..Bot_Name.."] حبيبي انت اموووح 💋","دا اشرب جاي تعال غير وكت 😌","كول حبيبي أمرني 😍",
+"احجي بسرعه شتريد 😤","ها يا قلبي ❤️","هم صاحو عليه راح ابدل اسمي من وراكم 😡",
+"لك فداك ["..Bot_Name.."] حبيبي انت اموووح 💋","دا اشرب جاي تعال غير وكت 😌","قول حبيبي أمرني 😍",
 "احجي فضني شرايد ولا اصير ضريف ودكلي جرايد لو مجلات تره بايخه 😒😏",
 "اشتعلو اهل ["..Bot_Name.."] شتريد 😠","بووووووووو 👻 ها ها فزيت شفتك شفتك لا تحلف 😂",
-"طالع مموجود 😒","هااا شنوو اكو حاته بالكروب وصحت عليه  😍💕","انت مو قبل يومين غلطت عليه؟  😒",
+"طالع مموجود 😒","هااا شنوو اكو حاته بالقروب وصحت عليه  😍💕","انت مو قبل يومين غلطت عليه؟  😒",
 "تروح فدوه الأسمي الوصخ شتري؟ مولبارحه رزلتك يوميه ازلك شبيك😑😹","ياعيون ["..Bot_Name.."] أمرني 😍",
 "لك دبدل ملابسي اطلع برااااا 😵😡 ناس متستحي","سويت هواي شغلات سخيفه بحياتي بس عمري مصحت على واحد وكلتله انجب 😑",
 "مشغول ويا ضلعتي  ☺️","مازا تريد منه 😌🍃"
@@ -3954,7 +4123,7 @@ local ns = {
 "هلا تاج راسي 🤷🏼‍♀️",
 "كافي قبل شويه سلمت😌",
 "هله بريحه هلي🤗",
-"هلوات اذا عندك كروبات ضيفني🤷🏼‍♀️❤️",
+"هلوات اذا عندك قروبات ضيفني🤷🏼‍♀️❤️",
 "ۿۿـ℘ﹻۧـ๋͜ـﻶٌُوٰ୭ًٌَّّٳټٴ ͢⁽✨☻₎♤ عمري 🙊😍😘",
 "هــلــℌelℓoووات عمـ°😻°ــري🙊😋",
 ": ٰٰهٌٰــٌـٓٓٓ:hand:ــٰـٰـٰ😍ــٰـٰـٰلـٰـٰوُٰـوُٰـوُات",
@@ -4029,11 +4198,11 @@ if msg.SudoUser and Text == Bot_Name and not Text2 then
 return sendMsg(msg.chat_id_,msg.id_,su[math.random(#su)])
 elseif not msg.SudoUser and Text== Bot_Name and not Text2 then  
 return sendMsg(msg.chat_id_,msg.id_,ss97[math.random(#ss97)])
-elseif Text:match("^كول (.*)$") then
-if utf8.len(Text:match("^كول (.*)$")) > 500 then 
-return sendMsg(msg.chat_id_,msg.id_,"📛| ما اكدر اكول اكثر من 500 حرف 🙌🏾")
+elseif Text:match("^قول (.*)$") then
+if utf8.len(Text:match("^قول (.*)$")) > 500 then 
+return sendMsg(msg.chat_id_,msg.id_,"📛| ما اقدر اقول اكثر من 500 حرف 🙌🏾")
 end
-local callback_Text = FlterName(Text:match("^كول (.*)$"),50)
+local callback_Text = FlterName(Text:match("^قول (.*)$"),50)
 if callback_Text and callback_Text == 'الاسم سبام 📛' then
 return sendMsg(msg.chat_id_,msg.id_,"📛| للاسف النص هذا مخالف ")
 else
@@ -4087,11 +4256,11 @@ else
 return sendMsg(msg.chat_id_,msg.id_,"📌 انجب ما اتفل عيب 😼🙌🏿") 
 end
 elseif Text== "تف" then return sendMsg(msg.chat_id_,msg.id_,"عيب ابني/بتي اتفل/ي اكبر منها شوية 😌😹")
-elseif Text== "اليافعي" then return sendMsg(msg.chat_id_,msg.id_,"[مالـك السورس 😍](t.me/AST0RH")
-elseif Text== "محمد اليافعي" then return sendMsg(msg.chat_id_,msg.id_,"[ مطور سورس اللـهـب 😍](t.me/AST0RH")
+elseif Text== "محمد" then return sendMsg(msg.chat_id_,msg.id_,"[مالـك السورس 😍](t.me/AST0RH")
+elseif Text== "اليافعي" then return sendMsg(msg.chat_id_,msg.id_,"[ مطور سورس اللـهـب 😍](t.me/AST0RH")
 elseif Text== "تمام" then return sendMsg(msg.chat_id_,msg.id_,"دومك بخير حياتي 😘")
 elseif Text== "صاكه"  then return sendMsg(msg.chat_id_,msg.id_,"اووويلي يابه 😍❤️ دزلي صورتهه 🐸💔")
-elseif Text== "وينك"  then return sendMsg(msg.chat_id_,msg.id_,"دور بكلبك وتلكاني 😍😍❤️")
+elseif Text== "وينك"  then return sendMsg(msg.chat_id_,msg.id_,"دور بقلبكـ وتلكاني 😍😍❤️")
 elseif Text== "منورين"  then return sendMsg(msg.chat_id_,msg.id_,"من نورك عمري ❤️🌺")
 elseif Text== "هاي"  then return sendMsg(msg.chat_id_,msg.id_,"هايات عمري 😍🍷")
 elseif Text== "🙊"  then return sendMsg(msg.chat_id_,msg.id_,"فديت الخجول 🙊 😍")
@@ -4112,7 +4281,7 @@ elseif Text== "حفلش"  then return sendMsg(msg.chat_id_,msg.id_,"افلش ر�
 elseif Text== "نايمين" then return sendMsg(msg.chat_id_,msg.id_,"ني سهران احرسكـم😐🍃'")
 elseif Text== "اكو احد" then return sendMsg(msg.chat_id_,msg.id_,"يي عيني انـي موجـود🌝🌿")
 elseif Text== "شكو" then return sendMsg(msg.chat_id_,msg.id_,"كلشي وكلاشي🐸تگـول عبالك احنـة بالشورجـة🌝")
-elseif Text== "انته منو" or Text=="منو نته" then return sendMsg(msg.chat_id_,msg.id_,"⚜╿انآ بوت بوت أسمي ["..Bot_Name.."] ✓ ⚜\n👨🏻‍✈️│آختصـآصـي حمـآيهہ‌‏ آلمـجمـوعآت\n\n📛│مـن آلسـبآم وآلتوجيهہ‌‏ وآلتگرآر وآلخ...\n\n⚠️╽ضيفني لكروبك ورفعني مشرف بلكروب وارسل تفعيل داخل الكروب")
+elseif Text== "انته منو" or Text=="منو نته" then return sendMsg(msg.chat_id_,msg.id_,"⚜╿انآ بوت بوت أسمي ["..Bot_Name.."] ✓ ⚜\n👨🏻‍✈️│آختصـآصـي حمـآيهہ‌‏ آلمـجمـوعآت\n\n📛│مـن آلسـبآم وآلتوجيهہ‌‏ وآلتگرآر وآلخ...\n\n⚠️╽ضيفني لقروبك ورفعني مشرف بلقروب وارسل تفعيل داخل القروب")
 elseif Text== "كلخرا" or Text== "اكل خره" then return sendMsg(msg.chat_id_,msg.id_,"خرا ليترس حلكك/ج ياخرا يابنلخرا خختفووو ابلع😸🙊💋")
 elseif Text== "😔"  then return sendMsg(msg.chat_id_,msg.id_,"ليش الحلو ضايج ❤️🍃")
 elseif Text== "☹️"  then return sendMsg(msg.chat_id_,msg.id_,"لضوج حبيبي 😢❤️🍃")
@@ -4126,7 +4295,7 @@ return sendMsg(msg.chat_id_,msg.id_,"احســن مــن انتهــــہ ش
 elseif Text== "يومه فدوه"  then return sendMsg(msg.chat_id_,msg.id_,"فدؤه الج حياتي 😍😙")
 elseif Text== "افلش"  then return sendMsg(msg.chat_id_,msg.id_,"باند عام من 30 بوت 😉")
 elseif Text== "احبج"  then return sendMsg(msg.chat_id_,msg.id_,"يخي احترم شعوري 😢")
-elseif Text== "شكو ماكو"  then return sendMsg(msg.chat_id_,msg.id_,"غيرك/ج بل كلب ماكو يبعد كلبي😍❤️️")
+elseif Text== "شكو ماكو"  then return sendMsg(msg.chat_id_,msg.id_,"غيرك/ج بل كلب ماكو يبعد قلبي😍❤️️")
 elseif Text== "😋"  then return sendMsg(msg.chat_id_,msg.id_,"طبب لسانك جوه عيب 😌")
 elseif Text== "😡"  then  return sendMsg(msg.chat_id_,msg.id_,"ابرد  🚒"  )
 elseif Text== "مرحبا"  then return sendMsg(msg.chat_id_,msg.id_,"مراحب 😍❤️ نورت-ي 🌹")
@@ -4148,8 +4317,8 @@ elseif Text== "حلو"  then return sendMsg(msg.chat_id_,msg.id_,"انت الا�
 elseif Text== "تبادل"  then return sendMsg(msg.chat_id_,msg.id_,"كافي ملينه تبادل 😕💔")
 elseif Text== "عاش"  then return sendMsg(msg.chat_id_,msg.id_,"الحلو 🌝🌷")
 elseif Text== "ورده" or Text== "وردة" then return sendMsg(msg.chat_id_,msg.id_,"أنت/ي  عطرها 🌹🌸")
-elseif Text== "شسمك"  then return sendMsg(msg.chat_id_,msg.id_,"⚜╿أسمي ["..Bot_Name.."]\n👨🏻‍✈️│آختصـآصـي حمـآيهہ‌‏ آلمـجمـوعآت\n📛│مـن آلسـبآم وآلتوجيهہ‌‏ وآلتگرآر وآلخ...\n⚠️╽ضيفني لكروبك ورفعني مشرف بلكروب وارسل تفعيل داخل الكروب")
-elseif Text== "فديت" or Text=="فطيت" then return sendMsg(msg.chat_id_,msg.id_,"فداك/ج كلبي ودكاته 🙈💗")
+elseif Text== "شسمك"  then return sendMsg(msg.chat_id_,msg.id_,"⚜╿أسمي ["..Bot_Name.."]\n👨🏻‍✈️│آختصـآصـي حمـآيهہ‌‏ آلمـجمـوعآت\n📛│مـن آلسـبآم وآلتوجيهہ‌‏ وآلتگرآر وآلخ...\n⚠️╽ضيفني لقروبك ورفعني مشرف بلقروب وارسل تفعيل داخل القروب")
+elseif Text== "فديت" or Text=="فطيت" then return sendMsg(msg.chat_id_,msg.id_,"فداك/ج قلبي ودكاته 🙈💗")
 elseif Text== "زاحفه" or Text== "زاحفة" then return  sendMsg(msg.chat_id_,msg.id_,"لو زاحفتلك جان ماكلت زاحفه 🌝🌸")
 elseif Text== "حبيبي" or Text=="حبي" then return  sendMsg(msg.chat_id_,msg.id_,"بعد روحي 😍❤️ تفضل")
 elseif Text== "حبيبتي" then return sendMsg(msg.chat_id_,msg.id_,"تحبك وتحب عليك 🌝🌷")
@@ -4160,9 +4329,9 @@ elseif Text== "بتحبني" then return sendMsg(msg.chat_id_,msg.id_,"بحبك 
 elseif Text== "المعزوفه" or Text=="المعزوفة" or Text=="معزوفه" then 
 return sendMsg(msg.chat_id_,msg.id_,"طرطاا طرطاا طرطاا 😂👌")
 elseif Text== "موجود" then return sendMsg(msg.chat_id_,msg.id_,"تفضل عزيزي 🌝🌸")
-elseif Text== "اكلك" then return sendMsg(msg.chat_id_,msg.id_,".كول حياتي 😚🌿")
+elseif Text== "اكلك" then return sendMsg(msg.chat_id_,msg.id_,".قول حياتي 😚🌿")
 elseif Text== "فدوه" or Text=="فدوة" or Text=="فطوه" or Text=="فطوة" then  
-return sendMsg(msg.chat_id_,msg.id_,"لكلبك/ج 😍❤️")
+return sendMsg(msg.chat_id_,msg.id_,"لقلبكـ/ج 😍❤️")
 elseif Text== "دي"  or Text== "ديي" then return sendMsg(msg.chat_id_,msg.id_,"امشيك بيها 😉👋🏻")
 elseif Text== "اشكرك" then return sendMsg(msg.chat_id_,msg.id_,"بخدمتك/ج حبي ❤")
 elseif Text== "😉"  then return sendMsg(msg.chat_id_,msg.id_,"😻🙈")
@@ -4175,23 +4344,23 @@ elseif Text== "نورت"  then return sendMsg(msg.chat_id_,msg.id_,"نـ﴿💡�
 elseif Text== "نورتي"  then return sendMsg(msg.chat_id_,msg.id_,"نـ﴿💡﴾ـورك/ج ؏ـمـ😲ـآني وحہـ(🔥)ـہرگ بيـ🏡ـت جيہـْ✍ـہرآنيًٍِ")
 elseif Text== "😹😹😹"  then return sendMsg(msg.chat_id_,msg.id_,"شـهضحڪًــة  ๋͜͡اٰ͡لحلوة بربڪً  ͜اٰ͡مڪً على شـو متوحمة😉😉")
 elseif Text== "رفع اثول"  then return sendMsg(msg.chat_id_,msg.id_,"🙋🏻‍♂╿اهــلا عزيزي\n🎫│تم رفع العضو اثول الگروب🤪بنجاح✔️\n🛠╽تمت إضافته إلى قائمه الثولان😹\n✓️")
-elseif Text== "تنزيل اثول"  then return sendMsg(msg.chat_id_,msg.id_,"🙋🏻‍♂╿اهــلا عزيزي\n🎫│تم تنزيل العضو من ثولان الكروب✔️\n🛠╽تمت الزاله من قامة الثولان😹\n✓️")
+elseif Text== "تنزيل اثول"  then return sendMsg(msg.chat_id_,msg.id_,"🙋🏻‍♂╿اهــلا عزيزي\n🎫│تم تنزيل العضو من ثولان القروب✔️\n🛠╽تمت الزاله من قامة الثولان😹\n✓️")
 elseif Text== "رفع جلب"  then return sendMsg(msg.chat_id_,msg.id_,"🙋🏻‍♂╿اهــلا عزيزي\n🎫│تم رفع المتهم إلى جلب 🐶بنجاح✔️\n🛠╽تمت إضافته إلى قائمه الجلاب😹\n✓️")
 elseif Text== "رفع مطي"  then return sendMsg(msg.chat_id_,msg.id_,"🙋🏻‍♂╿اهــلا عزيزي\n🎫│تم رفع المتهم إلى مطي 🦓بنجاح✔️\n🛠╽تمت إضافته إلى قائمه المطايه😹\n✓️")
 elseif Text== "تنزيل مطي"  then return sendMsg(msg.chat_id_,msg.id_,"🙋🏻‍♂╿اهــلا عزيزي\n🎫│تم تنزيل المتهم مطي بنجاح✔️\n🛠╽تمت ازالته من قائمه المطايه😹\n✓️")
 elseif Text== "تنزيل جلب"  then return sendMsg(msg.chat_id_,msg.id_,"🙋🏻‍♂╿اهــلا عزيزي \n🎫│تم تنزيل المتهم جلب 🐶بنجاح✔️\n🛠╽تمت إزالته من قائمه الجلاب😹\n✓️")
 elseif Text== "تنزيل زاحف"  then return sendMsg(msg.chat_id_,msg.id_,"🙋🏻‍♂╿اهــلا عزيزي\n🎫│تم تنزيل المتهم زاحف بنجاح✔️\n🛠╽تمت ازالته من قائمه الزواحف😹\n✓️")
-elseif Text== "رفع صخل"  then return sendMsg(msg.chat_id_,msg.id_,"🙋🏻‍♂╿اهــلا عزيزي\n🎫│تم رفع المتهم صخل 😹بنجاح✔️\n🛠╽الان اصبح صخل الكروب 🐐\n✓️")
+elseif Text== "رفع صخل"  then return sendMsg(msg.chat_id_,msg.id_,"🙋🏻‍♂╿اهــلا عزيزي\n🎫│تم رفع المتهم صخل 😹بنجاح✔️\n🛠╽الان اصبح صخل القروب 🐐\n✓️")
 elseif Text== "تنزيل صخل"  then return sendMsg(msg.chat_id_,msg.id_,"🙋🏻‍♂╿اهــلا عزيزي\n🎫│تم تنزيل المتهم صخل😹بنجاح✔️\n🛠╽تمت ٳزالته من قائمة الصخوله🐐\n✓️")
-elseif Text== "رفع بكلبي"  then return sendMsg(msg.chat_id_,msg.id_,"🙋🏻‍♂╿اهــلا عزيزي\n🎫│تم رفع العضو داخل كلبك✔️\n🛠╽تمت ترقيته بنجاح 😻??👋🏻\n✓️")
-elseif Text== "تنزيل من كلبي"  then return sendMsg(msg.chat_id_,msg.id_,"🙋🏻‍♂╿اهــلا عزيزي\n🎫│تم تنزيل من داخل قلبك✔️\n🛠╽تمت ازالته من قائمه القلوب 😹💔\n✓️")
+elseif Text== "رفع بقلبي"  then return sendMsg(msg.chat_id_,msg.id_,"🙋🏻‍♂╿اهــلا عزيزي\n🎫│تم رفع العضو داخل قلبكـ✔️\n🛠╽تمت ترقيته بنجاح 😻??👋🏻\n✓️")
+elseif Text== "تنزيل من قلبي"  then return sendMsg(msg.chat_id_,msg.id_,"🙋🏻‍♂╿اهــلا عزيزي\n🎫│تم تنزيل من داخل قلبك✔️\n🛠╽تمت ازالته من قائمه القلوب 😹💔\n✓️")
 elseif Text== "رفع تاج"  then return sendMsg(msg.chat_id_,msg.id_,"🙋🏻‍♂╿اهـلا عزيزي\n🎫│تم رفع صديقك تـ👑ـاج بنجاح ✔️ \n🛠╽اصبح خط احمر ❗️ \n✓️")
 elseif Text== "تنزيل تاج"  then return sendMsg(msg.chat_id_,msg.id_,"🙋🏻‍♂╿اهـلا عزيزي\n🎫│تم تنزيل العضو المهتلف\n🛠╽من قائمة ألتـ👑ـاج بنجاح ✔️😹💔\n✓️")
 elseif Text== "رفع مرتي"  then return sendMsg(msg.chat_id_,msg.id_,"🙋🏻‍♂╿اهــلا عزيزي\n🎫│تم رفع العضو مرتك بنجاح✔️\nالآن يمكنكم أخذ راحتكم🤤😉\n✓️")
 elseif Text== "تنزيل مرتي"  then return sendMsg(msg.chat_id_,msg.id_,"🙋🏻‍♂╿اهــلا عزيزي\n🎫│تم تنزيل الجكمه مرتك بنجاح✔️\nالآن انتم مفترقان☹️💔\n✓️")
 elseif Text== "زواج"  then return sendMsg(msg.chat_id_,msg.id_,"🙋🏻‍♂╿اهــلا عزيزي\n🎫│تم زواجكم الاثنين بنجاح✔️\n🛠╽الآن يمكنكم أخذ راحتكم🤤😉\n✓️")
-elseif Text== "طلاك"  then return sendMsg(msg.chat_id_,msg.id_,"🙋🏻‍♂╿اهــلا عزيزي\n🎫│تم طلاك العضو بنجاح✔️\n🛠╽الآن هو مطلك امشي طلعبرا 😹💔\n✓️")
-elseif Text== "اوامر التحشيش"  then return sendMsg(msg.chat_id_,msg.id_,"\n‌‌‏┄─┅══┅─┄\n🙋🏽‍♂╿مرحبآ عزيزي\n💯╽إليـك اوامر التحشيش كـ التالي\n●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●\n🤴╿رفع «» تنزيل ❬ تـــاج ❭\n👰│رفع «» تنزيل ❬ مرتي ❭\n🤪│رفع «» تنزيل ❬ اثـول ❭\n🐕│رفع «» تنزيل ❬ جلـب ❭\n🦓│رفع «» تنزيل ❬ مطـي ❭\n🐐│رفع «» تنزيل ❬ صخـل ❭\n🦎│رفع «» تنزيل ❬ زاحف ❭\n❤️│رفع «» ❬ بكلبي ❭ تنزيل «» ❬ من كلبي❭\n🎈╽❬ طلاك ❭ «» ❬ زواج ❭\n●ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ●")
+elseif Text== "طلاق"  then return sendMsg(msg.chat_id_,msg.id_,"🙋🏻‍♂╿اهــلا عزيزي\n🎫│تم طلاق العضو بنجاح✔️\n🛠╽الآن هو مطلق امشي طلعبرا 😹💔\n✓️")
+elseif Text== "اوامر التحشيش"  then return sendMsg(msg.chat_id_,msg.id_,"\n‌‌‏●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●\n🙋🏽‍♂╿مرحبآ عزيزي\n💯╽إليـك اوامر التحشيش كـ التالي\n●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●\n🤴╿رفع «» تنزيل ❬ تـــاج ❭\n👰│رفع «» تنزيل ❬ مرتي ❭\n🤪│رفع «» تنزيل ❬ اثـول ❭\n🐕│رفع «» تنزيل ❬ جلـب ❭\n🦓│رفع «» تنزيل ❬ مطـي ❭\n🐐│رفع «» تنزيل ❬ صخـل ❭\n🦎│رفع «» تنزيل ❬ زاحف ❭\n❤️│رفع «» ❬ بقلبي ❭ تنزيل «» ❬ من قلبي❭\n🎈╽❬ طلاق ❭ «» ❬ زواج ❭\n●ـ▬ـ▬ـ▬ஜ۩۞۩ஜ▬ـ▬ـ▬ـ●")
 
 elseif Text== "اقرالي دعاء" then 
 return sendMsg(msg.chat_id_,msg.id_,"اللهم عذب المدرسين 😢 منهم الاحياء والاموات 😭🔥 اللهم عذب ام الانكليزي 😭💔 وكهربها بلتيار الرئيسي 😇 اللهم عذب ام الرياضيات وحولها الى غساله بطانيات 🙊 اللهم عذب ام الاسلاميه واجعلها بائعة الشاميه 😭🍃 اللهم عذب ام العربي وحولها الى بائعه البلبي اللهم عذب ام الجغرافيه واجعلها كلدجاجه الحافية اللهم عذب ام التاريخ وزحلقها بقشره من البطيخ وارسلها الى المريخ اللهم عذب ام الاحياء واجعلها كل مومياء اللهم عذب المعاون اقتله بلمدرسه بهاون 😂😂😂")
@@ -4202,7 +4371,7 @@ local USERCAR = utf8.len(USERNAME)
 SendMention(msg.chat_id_,data.id_,msg.id_,"🧟‍♂│آضـغط على آلآيدي ليتم آلنسـخ\n\n "..USERNAME.." ~⪼ ( "..data.id_.." )",37,USERCAR)  
 return false
 end)
-elseif Text=="اريد رابط الحذف" or Text=="اريد رابط حذف" or Text=="رابط حذف" or Text=="رابط الحذف" then
+elseif Text=="اريد رابط الحذف" or Text=="اريد رابط حذف" or Text=="بوت الحذف" or Text=="رابط الحذف" then
 return sendMsg(msg.chat_id_,msg.id_,[[
 💭*╿* رابط حذف حـساب التيليگرام ↯
 ♦️│لتتندم فڪر قبل ڪلشي  
@@ -4365,7 +4534,7 @@ lhb = {
 "^(فك تقييد)$",
 "^(فك تقييد) (%d+)$",
 "^(فك تقييد) (@[%a%d_]+)$",
-"^(ضع شرط التفعيل) (%d+)$",
+"^(ضع شرط التفعيل🔆) (%d+)$",
 "^(التفاعل)$",
 "^(التفاعل) (@[%a%d_]+)$",
 "^([iI][dD])$",
@@ -4551,6 +4720,7 @@ lhb = {
 "^(test)$",
 "^(ايديي🆔)$",
 "^(قناة السورس 📡)$",
+"^(نقل ملكية البوت👨‍💻)$",
 "^(الاحصائيات)$",
 "^(الاحصائيات 💥)$",
 "^(اضف رد عام)$",
@@ -4588,7 +4758,7 @@ lhb = {
 "^(اصدار السورس)$",
 "^(الاصدار)$",
 "^(server)$",
-"^(السيرفر)$",
+"^(السيرفر 📟)$",
 "^(فحص البوت)$", 
 "^(نسخه احتياطيه للمجموعات)$",
 "^(رفع نسخه الاحتياطيه)$", 
